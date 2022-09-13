@@ -1,14 +1,14 @@
-﻿using System.Text;
-using static System.IO.Path;
+﻿using Archiver5E2D.Interfaces;
 using SystemFile = System.IO.File;
 
 namespace Archiver5E2D.Entities;
 
-public class File
+public class File : IEntity
 {
-    public readonly string Path;
-    public readonly string Name;
-    public readonly byte[] Content;
+    public string Path { get; }
+    public string Name { get; set; }
+    public byte[] Content { get; }
+    public IEntity.TypeEntity Type => IEntity.TypeEntity.File;
 
     public File(string path, string name, byte[] content)
     {
@@ -34,64 +34,9 @@ public class File
         throw new ArgumentException("The path does not lead to the file.");
     }
 
-    public static File Combine(IEnumerable<File> files, string path, string name)
+    public void Create(string rootPath)
     {
-        var resultContent = new List<byte>();
-        foreach (var file in files)
-        {
-            var pathWithFileName = System.IO.Path.Combine(file.Path, file.Name);
-            var pathBytes = Encoding.Default.GetBytes(pathWithFileName);
-            var pathLength = (uint)pathBytes.Length;
-
-            // Потому что путь файла не может превышать 260 символов
-            resultContent.AddRange(BitConverter.GetBytes(pathLength)[..2]);
-            resultContent.AddRange(pathBytes);
-
-            var contentLength = (uint)file.Content.Length;
-            resultContent.AddRange(BitConverter.GetBytes(contentLength));
-            resultContent.AddRange(file.Content);
-        }
-
-        return new File(path, name, resultContent.ToArray());
-    }
-
-    public static IEnumerable<File> Separate(byte[] bytes)
-    {
-        var files = new List<File>();
-
-        var index = 0;
-        while (index < bytes.Length)
-        {
-            var list = new List<byte> { bytes[index], bytes[index + 1], 0, 0 };
-            var pathLength = BitConverter.ToUInt32(list.ToArray());
-
-            index += 2;
-            var pathWithName = Encoding.Default.GetString(bytes, index, (int)pathLength);
-
-            index += (int)pathLength;
-            var contentLength = BitConverter.ToUInt32(bytes
-                .Skip(index)
-                .Take(list.Count)
-                .ToArray());
-
-            index += list.Count;
-            var content = bytes
-                .Skip(index)
-                .Take((int)contentLength)
-                .ToArray();
-
-            var fileName = GetFileName(pathWithName);
-            var path = GetDirectoryName(pathWithName)!;
-            files.Add(new File(path, fileName, content));
-            index += content.Length;
-        }
-
-        return files;
-    }
-
-    public void Create()
-    {
-        var fullPath = System.IO.Path.Combine(Path, Name);
+        var fullPath = System.IO.Path.Combine(rootPath, Name);
         SystemFile.WriteAllBytes(fullPath, Content);
     }
 
@@ -109,6 +54,6 @@ public class File
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(Path, Name, Content);
+        return HashCode.Combine(Path, Name, Content, Type);
     }
 }

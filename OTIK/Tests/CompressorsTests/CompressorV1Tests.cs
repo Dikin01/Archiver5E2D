@@ -1,7 +1,7 @@
 ﻿using Archiver5E2D.Compressors;
 using File = Archiver5E2D.Entities.File;
 
-namespace Tests.CodersTests;
+namespace Tests.CompressorsTests;
 
 public class CompressorV1Tests
 {
@@ -11,7 +11,7 @@ public class CompressorV1Tests
     private const string Path = @"c:\temp\";
 
     [Fact]
-    public void Compress_ShouldContain12Bytes_WhenEmptyFile()
+    public void Compress_ShouldContain12Bytes_WhenFileIsEmpty()
     {
         var bytes = Array.Empty<byte>();
         var file = new File(Path, FileName, bytes);
@@ -37,9 +37,41 @@ public class CompressorV1Tests
     }
     
     [Fact]
+    public void CompressThenDecompress_ShouldReturnEmptyFile_WhenWhenFileIsEmpty()
+    {
+        var bytes = Array.Empty<byte>();
+        var file = new File(Path, FileName, bytes);
+        var compressFile = _compressor.Compress(file);
+
+        var decompressFile = _compressor.Decompress(compressFile);
+
+        decompressFile.Should().Be(file);
+    }
+    
+    [Fact]
+    public void CompressThenDecompress_ShouldReturnOriginFile_WhenFileIsNotEmpty()
+    {
+        var bytes = Array.Empty<byte>();
+        var file = new File(Path, FileName, bytes);
+        var compressFile = _compressor.Compress(file);
+
+        var decompressFile = _compressor.Decompress(compressFile);
+
+        decompressFile.Should().Be(file);
+    }
+    
+    [Fact]
     public void Compress_ShouldThrowArgumentException_WhenFileIsNull()
     {
         var act = () => _compressor.Compress(null);
+
+        act.Should().Throw<NullReferenceException>();
+    }
+    
+    [Fact]
+    public void Decompress_ShouldThrowArgumentException_WhenFileIsNull()
+    {
+        var act = () => _compressor.Decompress(null);
 
         act.Should().Throw<NullReferenceException>();
     }

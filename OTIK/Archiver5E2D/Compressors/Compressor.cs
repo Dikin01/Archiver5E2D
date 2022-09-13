@@ -56,7 +56,7 @@ public abstract class Compressor
     
     private byte[] RemoveHeader(byte[] contentBytes)
     {
-        var result = contentBytes.Take((int)DataOffset).ToArray();
+        var result = contentBytes.Skip((int)DataOffset).ToArray();
 
         return result;
     }
