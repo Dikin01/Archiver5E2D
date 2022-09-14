@@ -6,7 +6,7 @@ namespace Archiver5E2D.Entities;
 public class File : IEntity
 {
     public string Path { get; }
-    public string Name { get; set; }
+    public string Name { get; }
     public byte[] Content { get; }
     public IEntity.TypeEntity Type => IEntity.TypeEntity.File;
 
@@ -50,10 +50,5 @@ public class File : IEntity
     private bool Equals(File other)
     {
         return Path == other.Path && Name == other.Name && Content.SequenceEqual(other.Content);
-    }
-
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(Path, Name, Content, Type);
     }
 }

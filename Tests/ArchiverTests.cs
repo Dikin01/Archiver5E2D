@@ -15,12 +15,24 @@ public class ArchiverTests
         const string name = nameof(Archive_ShouldThrowArgumentException_WhenFileIsNotExist);
         const string extension = ".txt";
         var fullPath = Path.Combine(path, name + extension);
-        if (File.Exists(fullPath))
-        {
-            File.Delete(fullPath);
-        }
+        File.Delete(fullPath);
 
         var act = () => Archiver.Archive(fullPath);
+
+        act.Should().Throw<ArgumentException>();
+    }
+    
+    [Fact]
+    public void Dearchive_ShouldThrowArgumentException_WhenFileIsNotExist()
+    {
+        var path = Environment.CurrentDirectory;
+        const string name = nameof(Dearchive_ShouldThrowArgumentException_WhenFileIsNotExist);
+        const string extension = Archiver.Extension;
+        var fullPath = Path.Combine(path, name + extension);
+        File.Create(fullPath).Dispose();
+        File.Delete(fullPath);
+
+        var act = () => Archiver.Dearchive(fullPath);
 
         act.Should().Throw<ArgumentException>();
     }

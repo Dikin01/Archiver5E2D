@@ -34,7 +34,7 @@ public static class Archiver
             return EntitiesConverter.Separate(file.Content);
         }
             
-        throw new ArgumentException("The path does not lead to a file or folder");
+        throw new ArgumentException("The path does not lead to a file");
     }
 
     private static File ArchiveFile(string path)
