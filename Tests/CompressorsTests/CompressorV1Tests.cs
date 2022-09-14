@@ -51,7 +51,8 @@ public class CompressorV1Tests
     [Fact]
     public void CompressThenDecompress_ShouldReturnOriginFile_WhenFileIsNotEmpty()
     {
-        var bytes = Array.Empty<byte>();
+        // TEST BRANCH RULE AND ACTIONS
+        var bytes = Array.Empty<byte>()
         var file = new File(Path, FileName, bytes);
         var compressFile = _compressor.Compress(file);
 
