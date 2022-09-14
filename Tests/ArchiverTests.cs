@@ -1,4 +1,4 @@
-﻿using System.Text;
+﻿/*using System.Text;
 using Archiver5E2D;
 using Archiver5E2D.Entities;
 using Archiver5E2D.Interfaces;
@@ -119,4 +119,4 @@ public class ArchiverTests
             return HashCode.Combine(obj.Name, obj.Content, obj.Type, obj.Path);
         }
     }
-}
+}*/
