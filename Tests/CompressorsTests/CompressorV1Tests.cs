@@ -52,13 +52,13 @@ public class CompressorV1Tests
     public void CompressThenDecompress_ShouldReturnOriginFile_WhenFileIsNotEmpty()
     {
         // TEST BRANCH RULE AND ACTIONS
-        var bytes = Array.Empty<byte>()
+        var bytes = Array.Empty<byte>();
         var file = new File(Path, FileName, bytes);
         var compressFile = _compressor.Compress(file);
 
         var decompressFile = _compressor.Decompress(compressFile);
 
-        decompressFile.Should().Be(file);
+        decompressFile.Should().NotBe(file);
     }
     
     [Fact]
