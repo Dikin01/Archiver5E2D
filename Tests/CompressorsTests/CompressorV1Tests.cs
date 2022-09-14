@@ -1,4 +1,4 @@
-﻿/*using Archiver5E2D.Compressors;
+﻿using Archiver5E2D.Compressors;
 using File = Archiver5E2D.Entities.File;
 
 namespace Tests.CompressorsTests;
@@ -93,4 +93,4 @@ public class CompressorV1Tests
         var result = BitConverter.ToUInt32(sizeBytes);
         result.Should().Be(expectedSize);
     }
-}*/
+}
