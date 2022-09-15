@@ -15,6 +15,8 @@ public abstract class Compressor
     public const uint DataOffset = 12;
     
     public abstract byte Version { get; }
+    
+    // TODO: Убрать, версия компрессора не должна строго определять алгоритмы
     public abstract byte[] AlgorithmCodes { get; }
 
     public virtual File Compress(File file)

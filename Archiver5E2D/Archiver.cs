@@ -1,7 +1,6 @@
-﻿using System.Collections.ObjectModel;
-using Archiver5E2D.Compressors;
-using Archiver5E2D.Entities;
+﻿using Archiver5E2D.Entities;
 using Archiver5E2D.Interfaces;
+using Archiver5E2D.Providers;
 using File = Archiver5E2D.Entities.File;
 
 namespace Archiver5E2D;
@@ -9,11 +8,6 @@ namespace Archiver5E2D;
 public static class Archiver
 {
     public const string Extension = ".5e2d";
-
-    private static readonly ReadOnlyCollection<Compressor> Compressors = new List<Compressor>
-    {
-        new CompressorV1()
-    }.AsReadOnly();
 
     public static File Archive(string path)
     {
@@ -23,43 +17,37 @@ public static class Archiver
             return ArchiveFolder(path);
         throw new ArgumentException("The path does not lead to a file or folder");
     }
-    
+
     public static IEnumerable<IEntity> Dearchive(string path)
     {
         if (System.IO.File.Exists(path))
         {
-            // TODO: Добавить провайдер компрессоров для выбора нужной версии
-            var compressors = GetLatestCompressor();
-            var file = compressors.Decompress(File.FromExistingFile(path));
-            return EntitiesConverter.Separate(file.Content);
+            var archivedFile = File.FromExistingFile(path);
+            var compressor = CompressorProvider.Provide(archivedFile);
+            var dearchivedFile = compressor.Decompress(File.FromExistingFile(path));
+            return EntitiesConverter.Separate(dearchivedFile.Content);
         }
-            
+
         throw new ArgumentException("The path does not lead to a file");
     }
 
     private static File ArchiveFile(string path)
     {
-        var compressors = GetLatestCompressor();
+        var compressor = CompressorProvider.GetLatestCompressor();
         var file = File.FromExistingFile(path);
-        
+
         file = EntitiesConverter.Combine(new List<IEntity> { file }, file.Path,
             Path.GetFileNameWithoutExtension(path) + Extension);
-        return compressors.Compress(file);
+        return compressor.Compress(file);
     }
 
     private static File ArchiveFolder(string path)
     {
-        var compressors = GetLatestCompressor();
+        var compressors = CompressorProvider.GetLatestCompressor();
         var folder = Folder.FromExistingFolder(path);
-        
+
         var file = EntitiesConverter.Combine(new List<IEntity> { folder }, folder.Path,
             folder.Name + Extension);
         return compressors.Compress(file);
-    }
-
-    private static Compressor GetLatestCompressor()
-    {
-        var latestVersion = Compressors.Max(compressor => compressor.Version);
-        return Compressors.Single(compressor => compressor.Version == latestVersion);
     }
 }

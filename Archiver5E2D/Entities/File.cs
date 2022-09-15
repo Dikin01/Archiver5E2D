@@ -12,7 +12,6 @@ public class File : IEntity
 
     public File(string path, string name, byte[] content)
     {
-        // TODO: Добавить исключения
         Path = path;
         Name = name;
         Content = content;
