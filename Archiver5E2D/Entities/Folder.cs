@@ -51,13 +51,13 @@ public class Folder : IEntity
         throw new ArgumentException("The path does not lead to the file.");
     }
     
-    public void Create(string rootPath)
+    public void Save(string rootPath)
     {
         var fullPath = System.IO.Path.Combine(rootPath, Name);
         Directory.CreateDirectory(fullPath);
         foreach (var entity in Entities)
         {
-            entity.Create(fullPath);
+            entity.Save(fullPath);
         }
     }
 

@@ -34,7 +34,7 @@ public class File : IEntity
         throw new ArgumentException("The path does not lead to the file.");
     }
 
-    public void Create(string rootPath)
+    public void Save(string rootPath)
     {
         var fullPath = System.IO.Path.Combine(rootPath, Name);
         SystemFile.WriteAllBytes(fullPath, Content);
