@@ -116,7 +116,7 @@ public class ArchiverTests
 
         public int GetHashCode(IEntity obj)
         {
-            return HashCode.Combine(obj.Name, obj.Content, obj.Type, obj.Path);
+            return HashCode.Combine(obj.Name, obj.Content, obj.TypeId, obj.Path);
         }
     }
 }

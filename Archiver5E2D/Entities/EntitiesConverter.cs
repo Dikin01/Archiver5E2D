@@ -6,19 +6,28 @@ namespace Archiver5E2D.Entities;
 
 public static class EntitiesConverter
 {
-    public static File Combine(IEnumerable<IEntity> entities, string path, string name)
+    private static readonly IDictionary<byte, Func<string, string, byte[], IEntity>> 
+        FactoryFunctionsForEntitiesBySupportedTypeId = 
+            new Dictionary<byte, Func<string, string, byte[], IEntity>>
+    {
+        { File.GetTypeId(), (path, name, content) => new File(path, name, content) },
+        { Folder.GetTypeId(), (path, name, content) => new Folder(path, name,
+            ConvertToEntities(content).ToList()) }
+    };
+
+    public static File CombineToFile(IEnumerable<IEntity> entities, string path, string name)
     {
         var resultContent = new List<byte>();
         foreach (var entity in entities)
         {
-            resultContent.Add((byte)entity.Type);
-            
-            var pathWithName = Path.Combine(entity.Path, entity.Name);
+            resultContent.Add(entity.TypeId);
+
+            var pathWithName = Combine(entity.Path, entity.Name);
             var pathBytes = Encoding.Default.GetBytes(pathWithName);
             var pathLength = (ushort)pathBytes.Length;
 
             // Потому что путь не может превышать 260 символов
-            resultContent.AddRange(BitConverter.GetBytes(pathLength)[..2]);
+            resultContent.AddRange(BitConverter.GetBytes(pathLength));
             resultContent.AddRange(pathBytes);
 
             var contentLength = (uint)entity.Content.Length;
@@ -29,60 +38,61 @@ public static class EntitiesConverter
         return new File(path, name, resultContent.ToArray());
     }
 
-    public static IEnumerable<IEntity> Separate(byte[] bytes)
+    public static IEnumerable<IEntity> SplitIntoEntities(File combinedFile)
+    {
+        return ConvertToEntities(combinedFile.Content);
+    }
+
+    private static IEnumerable<IEntity> ConvertToEntities(byte[] bytes)
     {
         var entities = new List<IEntity>();
 
         var index = 0;
         while (index < bytes.Length)
         {
-            var typeByte = bytes[index];
-            var type = (IEntity.TypeEntity)typeByte;
-            // Вынести в отдельную функцию
-            if (type != IEntity.TypeEntity.File && type != IEntity.TypeEntity.Folder)
-                throw new Exception($"A byte of type must be equal to 0x{IEntity.TypeEntity.File:X} or" +
-                                    $" 0x{IEntity.TypeEntity.Folder:X}");
+            var typeId = bytes[index];
+            CheckTypeId(typeId);
             index++;
-            
-            var list = new List<byte> { bytes[index], bytes[index + 1], 0, 0 };
-            var pathLength = BitConverter.ToUInt32(list.ToArray());
+
+            var pathLengthBytes = new List<byte> { bytes[index], bytes[index + 1] };
+            var pathLength = BitConverter.ToUInt16(pathLengthBytes.ToArray());
             index += 2;
-            
-            var pathWithName = Encoding.Default.GetString(bytes, index, (int)pathLength);
-            var fileName = GetFileName(pathWithName);
-            var path = GetDirectoryName(pathWithName)!;
-            index += (int)pathLength;
-            
+
+            var pathWithName = Encoding.Default.GetString(bytes, index, pathLength);
+            var entityName = GetFileName(pathWithName);
+            var entityPath = GetDirectoryName(pathWithName)!;
+            index += pathLength;
+
+            const int contentLengthSize = sizeof(uint);
             var contentLength = BitConverter.ToUInt32(bytes
                 .Skip(index)
-                .Take(list.Count)
+                .Take(contentLengthSize)
                 .ToArray());
-            index += list.Count;
+            index += contentLengthSize;
 
-            byte[] content;
-            IEntity entity;
-            if (type == IEntity.TypeEntity.File)
-            {
-                content = bytes
-                    .Skip(index)
-                    .Take((int)contentLength)
-                    .ToArray();
-                entity = new File(path, fileName, content);
-            }
-            else
-            {
-                content = bytes
-                    .Skip(index)
-                    .Take((int)contentLength)
-                    .ToArray();
-                var entitiesEntity = Separate(content);
-                entity = new Folder(path, fileName, entitiesEntity.ToList());
-            }
-
+            byte[] entityContent = bytes
+                .Skip(index)
+                .Take((int)contentLength)
+                .ToArray();
+            index += entityContent.Length;
+            
+            var createEntity = FactoryFunctionsForEntitiesBySupportedTypeId[typeId];
+            var entity = createEntity(entityPath, entityName, entityContent);
             entities.Add(entity);
-            index += content.Length;
         }
 
         return entities;
     }
+
+    private static void CheckTypeId(byte typeId)
+    {
+        if (!IsSupportedType(typeId))
+        {
+            throw new Exception($"A typeId must be equal to " +
+                                $"{string.Join(", ", FactoryFunctionsForEntitiesBySupportedTypeId.Keys)}");
+        }
+    }
+    
+    private static bool IsSupportedType(byte typeId) => 
+        FactoryFunctionsForEntitiesBySupportedTypeId.ContainsKey(typeId);
 }

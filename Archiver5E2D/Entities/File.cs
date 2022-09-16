@@ -8,11 +8,11 @@ public class File : IEntity
     public string Path { get; }
     public string Name { get; }
     public byte[] Content { get; }
-    public IEntity.TypeEntity Type => IEntity.TypeEntity.File;
+    public byte TypeId => GetTypeId();
+    public static byte GetTypeId() => 0;
 
     public File(string path, string name, byte[] content)
     {
-        // TODO: Добавить исключения
         Path = path;
         Name = name;
         Content = content;

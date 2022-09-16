@@ -8,9 +8,9 @@ public class Folder : IEntity
     public List<IEntity> Entities { get; }
     public string Path { get; }
     public string Name { get; }
-    public byte[] Content => EntitiesConverter.Combine(Entities, Path, Name).Content;
-
-    public IEntity.TypeEntity Type => IEntity.TypeEntity.Folder;
+    public byte[] Content => EntitiesConverter.CombineToFile(Entities, Path, Name).Content;
+    public byte TypeId => GetTypeId();
+    public static byte GetTypeId() => 1;
 
     public Folder(string path, string name)
     {
@@ -78,6 +78,6 @@ public class Folder : IEntity
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(Path, Name, Content, Type);
+        return HashCode.Combine(Path, Name, Content, TypeId);
     }
 }
