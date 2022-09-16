@@ -17,7 +17,7 @@ public static class Archiver
         IEntity entity;
         if (System.IO.File.Exists(path)) entity = File.FromExistingFile(path);
         else if (Directory.Exists(path)) entity = Folder.FromExistingFolder(path);
-        else throw new ArgumentException("The path does not lead to a file or folder");
+        else throw new ArgumentException("The path does not lead to a file or directory");
         
         return Archive(entity);
     }
@@ -28,7 +28,7 @@ public static class Archiver
         {
             var archivedFile = File.FromExistingFile(path);
             var compressor = CompressorProvider.ProvideForCompressedFile(archivedFile);
-            var combinedFile = compressor.Decompress(File.FromExistingFile(path));
+            var combinedFile = compressor.Decompress(archivedFile);
             
             return EntitiesConverter.SplitIntoEntities(combinedFile);
         }

@@ -49,7 +49,7 @@ public class ArchiverTests
         var originFile = Archiver5E2D.Entities.File.FromExistingFile(fullPath);
 
         var archiveFile = Archiver.Archive(fullPath);
-        archiveFile.Create(archiveFile.Path);
+        archiveFile.Save(archiveFile.Path);
         var dearchiveEntities = Archiver.Dearchive(Path.Combine(archiveFile.Path, archiveFile.Name));
         var result = dearchiveEntities.First() as Archiver5E2D.Entities.File;
         File.Delete(fullPath);
@@ -70,17 +70,17 @@ public class ArchiverTests
         var folder2 = new Folder("", "folder2", new List<IEntity> { file1, file2 });
         var folder = new Folder(rootPath, "folder", new List<IEntity> { file1, file2, folder1, folder2});
         var folderFullPath = Path.Combine(folder.Path, folder.Name);
-        folder.Create(rootPath);
+        folder.Save(rootPath);
         var resultPath = Path.Combine(rootPath, "result");
         Directory.CreateDirectory(resultPath);
         
         var archiveFile = Archiver.Archive(folderFullPath);
-        archiveFile.Create(resultPath);
+        archiveFile.Save(resultPath);
         var dearchiveEntities = Archiver.Dearchive(Path.Combine(resultPath, archiveFile.Name));
         
         foreach (var entity in dearchiveEntities)
         {
-            entity.Create(resultPath);
+            entity.Save(resultPath);
         }
         Directory.Delete(rootPath, true);
         TestArchiveFile(archiveFile, rootPath, folder.Name);
