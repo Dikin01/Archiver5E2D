@@ -17,23 +17,21 @@ public static class Archiver
         IEntity entity;
         if (System.IO.File.Exists(path)) entity = File.FromExistingFile(path);
         else if (Directory.Exists(path)) entity = Folder.FromExistingFolder(path);
-        else throw new ArgumentException("The path does not lead to a file or folder");
-        
+        else throw new ArgumentException("The path does not lead to a file or directory");
+
         return Archive(entity);
     }
 
     public static IEnumerable<IEntity> Dearchive(string path)
     {
-        if (System.IO.File.Exists(path))
-        {
-            var archivedFile = File.FromExistingFile(path);
-            var compressor = CompressorProvider.ProvideForCompressedFile(archivedFile);
-            var combinedFile = compressor.Decompress(File.FromExistingFile(path));
-            
-            return EntitiesConverter.SplitIntoEntities(combinedFile);
-        }
+        if (!System.IO.File.Exists(path))
+            throw new ArgumentException("The path does not lead to a file");
 
-        throw new ArgumentException("The path does not lead to a file");
+        var archivedFile = File.FromExistingFile(path);
+        var compressor = CompressorProvider.ProvideForCompressedFile(archivedFile);
+        var combinedFile = compressor.Decompress(archivedFile);
+
+        return EntitiesConverter.SplitIntoEntities(combinedFile);
     }
 
     private static File Archive(IEntity entity)

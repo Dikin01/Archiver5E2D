@@ -5,7 +5,7 @@ namespace Archiver5E2D.Entities;
 
 public class Folder : IEntity
 {
-    public List<IEntity> Entities { get; }
+    public List<IEntity> Entities { get; } = new();
     public string Path { get; }
     public string Name { get; }
     public byte[] Content => EntitiesConverter.CombineToFile(Entities, Path, Name).Content;
@@ -16,7 +16,6 @@ public class Folder : IEntity
     {
         Path = path;
         Name = name;
-        Entities = new List<IEntity>();
     }
 
     public Folder(string path, string name, List<IEntity> entities)
@@ -24,48 +23,43 @@ public class Folder : IEntity
     {
         Entities.AddRange(entities);
     }
-    
+
     public static Folder FromExistingFolder(string path)
     {
         var directoryInfo = new DirectoryInfo(path);
+        if (!directoryInfo.Exists)
+            throw new ArgumentException("The path does not lead to the file.");
 
-        if (directoryInfo.Exists)
-        {
-            var name = directoryInfo.Name;
-            var directoryPath = directoryInfo.Parent?.FullName!;
-            var folder = new Folder(directoryPath, name);
+        var name = directoryInfo.Name;
+        var directoryPath = directoryInfo.Parent?.FullName!;
+        var folder = new Folder(directoryPath, name);
 
-            var entities = folder.Entities;
-            foreach (var fileInfos in directoryInfo.GetFiles())
-            {
-                entities.Add(File.FromExistingFile(fileInfos.FullName));
-            }
-            foreach (var fileInfos in directoryInfo.GetDirectories())
-            {
-                entities.Add(FromExistingFolder(fileInfos.FullName));
-            }
+        var entities = folder.Entities;
+        
+        entities.AddRange(directoryInfo
+            .GetFiles()
+            .Select(fileInfos => File.FromExistingFile(fileInfos.FullName)));
 
-            return folder;
-        }
+        entities.AddRange(directoryInfo
+            .GetDirectories()
+            .Select(fileInfos => FromExistingFolder(fileInfos.FullName)));
 
-        throw new ArgumentException("The path does not lead to the file.");
+        return folder;
     }
-    
-    public void Create(string rootPath)
+
+    public void Save(string rootPath)
     {
         var fullPath = System.IO.Path.Combine(rootPath, Name);
         Directory.CreateDirectory(fullPath);
         foreach (var entity in Entities)
-        {
-            entity.Create(fullPath);
-        }
+            entity.Save(fullPath);
     }
 
     public override bool Equals(object? obj)
     {
         if (obj is Folder folder)
             return Equals(folder);
-        return base.Equals(obj);
+        return false;
     }
 
     private bool Equals(Folder other)

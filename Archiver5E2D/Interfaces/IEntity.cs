@@ -7,5 +7,5 @@ public interface IEntity
     byte[] Content { get; }
     byte TypeId { get; }
 
-    void Create(string path);
+    void Save(string path);
 }
