@@ -17,8 +17,8 @@ public class EntitiesConverterTests
         var file2 = new File("path2", "file2.docx", new byte[] { 0xBB });
         var files = new List<IEntity> { file1, file2 };
 
-        var combinedFile = EntitiesConverter.Combine(files, newPath, newName);
-        var result = EntitiesConverter.Separate(combinedFile.Content);
+        var combinedFile = EntitiesConverter.CombineToFile(files, newPath, newName);
+        var result = EntitiesConverter.SplitIntoEntities(combinedFile);
         result.Should().Equal(files);
     }
 
@@ -35,8 +35,8 @@ public class EntitiesConverterTests
         var folder = new Folder("path3", "folder", files);
         var packedFolder = new List<IEntity> { folder };
 
-        var combinedFile = EntitiesConverter.Combine(packedFolder, newPath, newName);
-        var result = EntitiesConverter.Separate(combinedFile.Content);
+        var combinedFile = EntitiesConverter.CombineToFile(packedFolder, newPath, newName);
+        var result = EntitiesConverter.SplitIntoEntities(combinedFile);
         result.Should().Equal(packedFolder);
     }
 
@@ -55,8 +55,8 @@ public class EntitiesConverterTests
         folder2.Entities.AddRange(files);
         var packedFolder = new List<IEntity> { folder2 };
 
-        var combinedFile = EntitiesConverter.Combine(packedFolder, newPath, newName);
-        var result = EntitiesConverter.Separate(combinedFile.Content);
+        var combinedFile = EntitiesConverter.CombineToFile(packedFolder, newPath, newName);
+        var result = EntitiesConverter.SplitIntoEntities(combinedFile);
         result.Should().Equal(packedFolder);
     }
 }

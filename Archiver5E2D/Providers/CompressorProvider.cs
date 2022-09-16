@@ -1,46 +1,38 @@
 using System.Collections.ObjectModel;
-using System.Reflection;
 using Archiver5E2D.Compressors;
-using Archiver5E2D.Exceptions;
 using File = Archiver5E2D.Entities.File;
 
 namespace Archiver5E2D.Providers;
 
 public static class CompressorProvider
 {
-    private static readonly ReadOnlyCollection<Compressor> Compressors = new List<Compressor>
-    {
-        new CompressorV1()
-    }.AsReadOnly();
+    private static readonly ReadOnlyCollection<Compressor> Compressors;
 
     static CompressorProvider()
     {
-        var compressors = Assembly.GetExecutingAssembly().GetExportedTypes()
-            .Where(type => type.IsSubclassOf(typeof(Compressor)));
+        var typeCompressor = typeof(Compressor);
+        var compressorHeirsTypes = typeCompressor.Assembly
+            .GetTypes()
+            .Where(type => type.IsSubclassOf(typeCompressor) && type.IsClass && !type.IsAbstract);
+        Compressors = compressorHeirsTypes
+            .Select(type => (Compressor)Activator.CreateInstance(type)!)
+            .ToList().AsReadOnly();
     }
 
-    public static Compressor Provide(File compressedFile)
+    public static Compressor ProvideForCompressedFile(File file)
     {
-        var version = compressedFile.Content[(int)Compressor.VersionOffset];
+        var version = file.Content[(int)Compressor.VersionOffset];
         return GetCompressorByVersion(version);
     }
 
-    public static Compressor GetLatestCompressor()
+    public static Compressor GetNewestCompressor()
     {
-        var latestVersion = Compressors.Max(compressor => compressor.Version);
-        return GetCompressorByVersion(latestVersion);
+        var newVersion = Compressors.Max(compressor => compressor.Version);
+        return GetCompressorByVersion(newVersion);
     }
 
     private static Compressor GetCompressorByVersion(byte version)
     {
-        try
-        {
-            return Compressors.Single(compressor => compressor.Version == version);
-        }
-        catch (InvalidOperationException e)
-        {
-            throw new CompressorNotFoundException("There isn't one-to-one correspondence" +
-                                                  " between version and compressor", e);
-        }
+        return Compressors.Single(compressor => compressor.Version == version);
     }
 }
