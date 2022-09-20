@@ -2,7 +2,7 @@
 ## About The Project
 
 This library is being created as part of a laboratory work on the subject "Fundamentals of information theory and coding".
-The solution allows you to archive files and folders using compression.
+It allows you to archive files and folders using compression.
 
 ## Getting Started
 
