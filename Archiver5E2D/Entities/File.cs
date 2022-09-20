@@ -36,6 +36,8 @@ public class File : IEntity
 
     public void Save(string rootPath)
     {
+        // TODO: Добавить тест на создание пути, если он не существует
+        Directory.CreateDirectory(rootPath);
         var fullPath = System.IO.Path.Combine(rootPath, Name);
         SystemFile.WriteAllBytes(fullPath, Content);
     }
