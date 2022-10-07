@@ -11,6 +11,11 @@ public abstract class BaseFileAnalyzer<T> where T : notnull
         _fileBytes = File.ReadAllBytes(path);
     }
 
+    public BaseFileAnalyzer(Archiver5E2D.Entities.File file)
+    {
+        _fileBytes = file.Content;
+    }
+
     public abstract Dictionary<T, long> GetCountOccurrences();
 
     public Dictionary<T, double> GetProbabilities()

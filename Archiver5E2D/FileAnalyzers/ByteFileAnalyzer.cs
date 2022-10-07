@@ -3,6 +3,7 @@ using Archiver5E2D.FileAnalyzers;
 public class ByteFileAnalyzer : BaseFileAnalyzer<byte>
 {
     public ByteFileAnalyzer(string path) : base(path) { }
+    public ByteFileAnalyzer(Archiver5E2D.Entities.File file) : base(file) { }
 
     public override long Length => _fileBytes.Length;
 
