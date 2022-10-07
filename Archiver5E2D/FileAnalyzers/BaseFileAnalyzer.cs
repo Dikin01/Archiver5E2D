@@ -8,9 +8,6 @@ public abstract class BaseFileAnalyzer<T> where T : notnull
 
     public BaseFileAnalyzer(string path)
     {
-        if (!File.Exists(path))
-            throw new FileNotFoundException("File not found", Path.GetFileName(path));
-
         _fileBytes = File.ReadAllBytes(path);
     }
 

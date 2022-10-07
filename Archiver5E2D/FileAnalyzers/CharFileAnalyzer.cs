@@ -10,7 +10,7 @@ public class CharFileAnalyzer : BaseFileAnalyzer<char>
     
     public CharFileAnalyzer(string path) : base(path)
     {
-        _chars = Encoding.Unicode.GetChars(_fileBytes);
+        _chars = Encoding.Default.GetChars(_fileBytes);
     }
 
     public override Dictionary<char, long> GetCountOccurrences()

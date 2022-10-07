@@ -5,12 +5,10 @@ namespace Tests.FileAnalyzersTests;
 public class ByteFileAnalyzerTests
 {
     private readonly string _testText;
-    private readonly byte[] _bytes;
+    private readonly byte[] _bytes = { 0, 1, 2 };
 
     public ByteFileAnalyzerTests()
     {
-        _bytes = new byte[] { 0, 1, 2 };
-
         var textBuilder = new StringBuilder();
         textBuilder
             .Append((char)_bytes[0], 10)
@@ -21,9 +19,9 @@ public class ByteFileAnalyzerTests
     }
 
     [Fact]
-    public void GetCountOccurrences_ShouldReturnExpected()
+    public void GetCountOccurrences_ShouldReturnExpected_WhenByteFileAnalyzer()
     {
-        const string fileName = nameof(GetCountOccurrences_ShouldReturnExpected);
+        const string fileName = nameof(GetCountOccurrences_ShouldReturnExpected_WhenByteFileAnalyzer);
         RemoveFile(fileName);
         CreateTextFile(fileName, _testText);
         var expected = new Dictionary<byte, long>
@@ -42,9 +40,9 @@ public class ByteFileAnalyzerTests
     }
 
     [Fact]
-    public void GetProbabilities_ShouldReturnExpected()
+    public void GetProbabilities_ShouldReturnExpected_WhenByteFileAnalyzer()
     {
-        const string fileName = nameof(GetProbabilities_ShouldReturnExpected);
+        const string fileName = nameof(GetProbabilities_ShouldReturnExpected_WhenByteFileAnalyzer);
         RemoveFile(fileName);
         CreateTextFile(fileName, _testText);
         var expected = new Dictionary<byte, double>
@@ -63,9 +61,9 @@ public class ByteFileAnalyzerTests
     }
 
     [Fact]
-    public void GetInfoAmountInSymbol_ShouldReturnExpected()
+    public void GetInfoAmountInSymbol_ShouldReturnExpected_WhenByteFileAnalyzer()
     {
-        const string fileName = nameof(GetInfoAmountInSymbol_ShouldReturnExpected);
+        const string fileName = nameof(GetInfoAmountInSymbol_ShouldReturnExpected_WhenByteFileAnalyzer);
         RemoveFile(fileName);
         CreateTextFile(fileName, _testText);
         var expected = new Dictionary<byte, double>
@@ -83,9 +81,9 @@ public class ByteFileAnalyzerTests
     }
 
     [Fact]
-    public void GetInfoAmount_ShouldReturnExpected()
+    public void GetInfoAmount_ShouldReturnExpected_WhenByteFileAnalyzer()
     {
-        const string fileName = nameof(GetInfoAmount_ShouldReturnExpected);
+        const string fileName = nameof(GetInfoAmount_ShouldReturnExpected_WhenByteFileAnalyzer);
         RemoveFile(fileName);
         CreateTextFile(fileName, _testText);
         const double expectedBits = 87.5488;
