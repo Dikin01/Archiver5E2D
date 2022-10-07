@@ -22,18 +22,18 @@ public abstract class BaseFileAnalyzer<T> where T : notnull
 
         return occurrences
             .ToDictionary(occurrence => occurrence.Key,
-                occurrence => (double) occurrence.Value / Length);
+                occurrence => (double)occurrence.Value / Length);
     }
 
     public Dictionary<T, double> GetInfoAmountInSymbol()
     {
         var probabilities = GetProbabilities();
-        
+
         return probabilities
             .ToDictionary(probability => probability.Key,
-                probability => - Math.Log2(probability.Value));
+                probability => -Math.Log2(probability.Value));
     }
-    
+
     public (double bits, double bytes) GetInfoAmount()
     {
         var infoAmountInSymbol = GetInfoAmountInSymbol();
