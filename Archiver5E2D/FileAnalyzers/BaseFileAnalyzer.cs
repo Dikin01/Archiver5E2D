@@ -37,11 +37,11 @@ public abstract class BaseFileAnalyzer<T> where T : notnull
     public (double bits, double bytes) GetInfoAmount()
     {
         var infoAmountInSymbol = GetInfoAmountInSymbol();
-        var probabilities = GetProbabilities();
+        var occurrences = GetCountOccurrences();
 
         var bits = infoAmountInSymbol
             .Where(item => item.Value != 0)
-            .Sum(item => item.Value * probabilities[item.Key]);
+            .Sum(item => item.Value * occurrences[item.Key]);
 
         var bytes = Math.Ceiling(bits);
 
