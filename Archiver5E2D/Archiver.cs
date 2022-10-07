@@ -30,6 +30,8 @@ public static class Archiver
         var archivedFile = File.FromExistingFile(path);
         var compressor = CompressorProvider.ProvideForCompressedFile(archivedFile);
         var combinedFile = compressor.Decompress(archivedFile);
+
+        return EntitiesConverter.SplitIntoEntities(combinedFile);
     }
 
     private static File Archive(IEntity entity)
