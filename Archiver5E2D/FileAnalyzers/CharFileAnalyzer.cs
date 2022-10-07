@@ -12,6 +12,11 @@ public class CharFileAnalyzer : BaseFileAnalyzer<char>
     {
         _chars = Encoding.Default.GetChars(_fileBytes);
     }
+    
+    public CharFileAnalyzer(Archiver5E2D.Entities.File file) : base (file)
+    {
+        _chars = Encoding.Default.GetChars(_fileBytes);
+    }
 
     public override Dictionary<char, long> GetCountOccurrences()
     {
