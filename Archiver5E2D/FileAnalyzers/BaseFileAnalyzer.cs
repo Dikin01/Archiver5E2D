@@ -31,7 +31,7 @@ public abstract class BaseFileAnalyzer<T> where T : notnull
         
         return probabilities
             .ToDictionary(probability => probability.Key,
-                probability => - Math.Log2(probability.Value / Length));
+                probability => - Math.Log2(probability.Value));
     }
     
     public (double bits, double bytes) GetInfoAmount()
