@@ -1,6 +1,6 @@
 using Archiver5E2D.FileAnalyzers;
 
-public class ByteFileAnalyzer : BaseFileAnalyzer<Byte>
+public class ByteFileAnalyzer : BaseFileAnalyzer<byte>
 {
     public ByteFileAnalyzer(string path) : base(path) { }
 
