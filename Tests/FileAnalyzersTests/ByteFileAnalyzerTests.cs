@@ -71,17 +71,33 @@ public class ByteFileAnalyzerTests
         var expected = new Dictionary<byte, double>
         {
             { _bytes[0], -Math.Log2((double)10 / 60) },
-            { _bytes[1], -Math.Log2((double)10 / 60) },
-            { _bytes[2], -Math.Log2((double)10 / 60) }
+            { _bytes[1], -Math.Log2((double)20 / 60) },
+            { _bytes[2], -Math.Log2((double)30 / 60) }
         };
 
         var analyzer = new ByteFileAnalyzer(fileName);
         var result = analyzer.GetInfoAmountInSymbol();
 
-        RemoveFile(fileName);
         result.Where(item => item.Value > 0)
-            .Should().Equal(expected);
+            .Should().BeEquivalentTo(expected);
     }
+
+    [Fact]
+    public void GetInfoAmount_ShouldReturnExpected()
+    {
+        const string fileName = nameof(GetInfoAmount_ShouldReturnExpected);
+        RemoveFile(fileName);
+        CreateTextFile(fileName, _testText);
+        const double expectedBits = 87.5488;
+        const int expectedBytes = 88;
+
+        var analyzer = new ByteFileAnalyzer(fileName);
+        var result = analyzer.GetInfoAmount();
+
+        result.bits.Should().BeApproximately(expectedBits, 0.0001);
+        result.bytes.Should().Be(expectedBytes);
+    }
+
 
     private static void CreateTextFile(string fileName, string text)
     {

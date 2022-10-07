@@ -29,9 +29,16 @@ public abstract class BaseFileAnalyzer<T> where T : notnull
     {
         var probabilities = GetProbabilities();
 
-        return probabilities
-            .ToDictionary(probability => probability.Key,
-                probability => -Math.Log2(probability.Value));
+        var result = new Dictionary<T, double>();
+        foreach (var probability in probabilities)
+        {
+            if(probability.Value != 0)
+                result.Add(probability.Key, -Math.Log2(probability.Value));
+            else
+                result.Add(probability.Key, 0);
+        }
+
+        return result;
     }
 
     public (double bits, double bytes) GetInfoAmount()
