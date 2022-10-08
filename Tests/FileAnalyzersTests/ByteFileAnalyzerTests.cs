@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Archiver5E2D.FileAnalyzers;
 
 namespace Tests.FileAnalyzersTests;
 
@@ -35,8 +36,7 @@ public class ByteFileAnalyzerTests
         var result = analyzer.GetCountOccurrences();
 
         RemoveFile(fileName);
-        result.Where(item => item.Value > 0)
-            .Should().Equal(expected);
+        result.Should().Equal(expected);
     }
 
     [Fact]
@@ -56,8 +56,7 @@ public class ByteFileAnalyzerTests
         var result = analyzer.GetProbabilities();
 
         RemoveFile(fileName);
-        result.Where(item => item.Value > 0)
-            .Should().Equal(expected);
+        result.Should().Equal(expected);
     }
 
     [Fact]
@@ -76,8 +75,7 @@ public class ByteFileAnalyzerTests
         var analyzer = new ByteFileAnalyzer(fileName);
         var result = analyzer.GetInfoAmountInSymbol();
 
-        result.Where(item => item.Value > 0)
-            .Should().BeEquivalentTo(expected);
+        result.Should().BeEquivalentTo(expected);
     }
 
     [Fact]

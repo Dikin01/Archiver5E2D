@@ -36,8 +36,7 @@ public class CharFileAnalyzerTests
         var result = analyzer.GetCountOccurrences();
 
         RemoveFile(fileName);
-        result.Where(item => item.Value > 0)
-            .Should().Equal(expected);
+        result.Should().Equal(expected);
     }
 
     [Fact]
@@ -57,8 +56,7 @@ public class CharFileAnalyzerTests
         var result = analyzer.GetProbabilities();
 
         RemoveFile(fileName);
-        result.Where(item => item.Value > 0)
-            .Should().Equal(expected);
+        result.Should().Equal(expected);
     }
 
     [Fact]
@@ -77,8 +75,7 @@ public class CharFileAnalyzerTests
         var analyzer = new CharFileAnalyzer(fileName);
         var result = analyzer.GetInfoAmountInSymbol();
 
-        result.Where(item => item.Value > 0)
-            .Should().BeEquivalentTo(expected);
+        result.Should().BeEquivalentTo(expected);
     }
 
     [Fact]

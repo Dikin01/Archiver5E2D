@@ -2,21 +2,31 @@ namespace Archiver5E2D.FileAnalyzers;
 
 public abstract class BaseFileAnalyzer<T> where T : notnull
 {
-    protected readonly byte[] _fileBytes;
+    protected readonly byte[] FileBytes;
 
-    public abstract long Length { get; }
+    protected abstract IReadOnlyCollection<T> AnalyzedSymbols { get; }
 
-    public BaseFileAnalyzer(string path)
+    protected abstract long Length { get; }
+
+    protected BaseFileAnalyzer(string path)
     {
-        _fileBytes = File.ReadAllBytes(path);
+        FileBytes = File.ReadAllBytes(path);
     }
 
-    public BaseFileAnalyzer(Archiver5E2D.Entities.File file)
+    protected BaseFileAnalyzer(Archiver5E2D.Entities.File file)
     {
-        _fileBytes = file.Content;
+        FileBytes = file.Content;
     }
 
-    public abstract Dictionary<T, long> GetCountOccurrences();
+    public Dictionary<T, long> GetCountOccurrences()
+    {
+        var result = new Dictionary<T, long>();
+
+        foreach (var symbol in AnalyzedSymbols)
+            result[symbol] = result.GetValueOrDefault(symbol, 0) + 1;
+
+        return result;
+    }
 
     public Dictionary<T, double> GetProbabilities()
     {
