@@ -5,7 +5,6 @@ public abstract class BaseFileAnalyzer<T> where T : notnull
     protected readonly byte[] FileBytes;
 
     protected abstract IReadOnlyCollection<T> AnalyzedSymbols { get; }
-
     protected abstract long Length { get; }
 
     protected BaseFileAnalyzer(string path)

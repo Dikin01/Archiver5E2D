@@ -46,7 +46,7 @@ public class ArchiverTests
         var fullPath = Path.Combine(path, name + extension);
         File.Create(fullPath).Dispose();
         File.WriteAllText(fullPath, "foo bar");
-        var originFile = Archiver5E2D.Entities.File.FromExistingFile(fullPath);
+        var originFile = Archiver5E2D.Entities.File.FromExisting(fullPath);
 
         var archiveFile = Archiver.Archive(fullPath);
         archiveFile.Save(archiveFile.Path);

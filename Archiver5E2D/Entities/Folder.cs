@@ -24,7 +24,7 @@ public class Folder : IEntity
         Entities.AddRange(entities);
     }
 
-    public static Folder FromExistingFolder(string path)
+    public static Folder FromExisting(string path)
     {
         var directoryInfo = new DirectoryInfo(path);
         if (!directoryInfo.Exists)
@@ -38,11 +38,11 @@ public class Folder : IEntity
         
         entities.AddRange(directoryInfo
             .GetFiles()
-            .Select(fileInfos => File.FromExistingFile(fileInfos.FullName)));
+            .Select(fileInfos => File.FromExisting(fileInfos.FullName)));
 
         entities.AddRange(directoryInfo
             .GetDirectories()
-            .Select(fileInfos => FromExistingFolder(fileInfos.FullName)));
+            .Select(fileInfos => FromExisting(fileInfos.FullName)));
 
         return folder;
     }
@@ -68,10 +68,5 @@ public class Folder : IEntity
                Name == other.Name &&
                Entities.Count == other.Entities.Count &&
                Entities.All(entity => other.Entities.Contains(entity));
-    }
-
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(Path, Name, Content, TypeId);
     }
 }
