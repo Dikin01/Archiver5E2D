@@ -41,16 +41,9 @@ public abstract class BaseFileAnalyzer<T> where T : notnull
     {
         var probabilities = GetProbabilities();
 
-        var result = new Dictionary<T, double>();
-        foreach (var probability in probabilities)
-        {
-            if(probability.Value != 0)
-                result.Add(probability.Key, -Math.Log2(probability.Value));
-            else
-                result.Add(probability.Key, 0);
-        }
-
-        return result;
+        return probabilities
+            .ToDictionary(probability => probability.Key,
+                probability => -Math.Log2(probability.Value));
     }
 
     public (double bits, double bytes) GetInfoAmount()
@@ -59,7 +52,6 @@ public abstract class BaseFileAnalyzer<T> where T : notnull
         var occurrences = GetCountOccurrences();
 
         var bits = infoAmountInSymbol
-            .Where(item => item.Value != 0)
             .Sum(item => item.Value * occurrences[item.Key]);
 
         var bytes = Math.Ceiling(bits);
