@@ -18,20 +18,17 @@ public class File : IEntity
         Content = content;
     }
 
-    public static File FromExistingFile(string pathWithFileName)
+    public static File FromExisting(string pathWithFileName)
     {
         var fileInfo = new FileInfo(pathWithFileName);
+        if (!fileInfo.Exists)
+            throw new ArgumentException("The path does not lead to the file.");
 
-        if (fileInfo.Exists)
-        {
-            var path = fileInfo.DirectoryName ?? string.Empty;
-            var name = fileInfo.Name;
-            var bytes = SystemFile.ReadAllBytes(fileInfo.FullName);
+        var path = fileInfo.DirectoryName ?? string.Empty;
+        var name = fileInfo.Name;
+        var bytes = SystemFile.ReadAllBytes(fileInfo.FullName);
 
-            return new File(path, name, bytes);
-        }
-
-        throw new ArgumentException("The path does not lead to the file.");
+        return new File(path, name, bytes);
     }
 
     public void Save(string rootPath)

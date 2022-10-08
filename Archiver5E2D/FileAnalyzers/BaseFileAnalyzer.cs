@@ -2,21 +2,30 @@ namespace Archiver5E2D.FileAnalyzers;
 
 public abstract class BaseFileAnalyzer<T> where T : notnull
 {
-    protected readonly byte[] _fileBytes;
+    protected readonly byte[] FileBytes;
 
-    public abstract long Length { get; }
+    protected abstract IReadOnlyCollection<T> AnalyzedSymbols { get; }
+    protected abstract long Length { get; }
 
-    public BaseFileAnalyzer(string path)
+    protected BaseFileAnalyzer(string path)
     {
-        _fileBytes = File.ReadAllBytes(path);
+        FileBytes = File.ReadAllBytes(path);
     }
 
-    public BaseFileAnalyzer(Archiver5E2D.Entities.File file)
+    protected BaseFileAnalyzer(Archiver5E2D.Entities.File file)
     {
-        _fileBytes = file.Content;
+        FileBytes = file.Content;
     }
 
-    public abstract Dictionary<T, long> GetCountOccurrences();
+    public Dictionary<T, long> GetCountOccurrences()
+    {
+        var result = new Dictionary<T, long>();
+
+        foreach (var symbol in AnalyzedSymbols)
+            result[symbol] = result.GetValueOrDefault(symbol, 0) + 1;
+
+        return result;
+    }
 
     public Dictionary<T, double> GetProbabilities()
     {
@@ -31,16 +40,9 @@ public abstract class BaseFileAnalyzer<T> where T : notnull
     {
         var probabilities = GetProbabilities();
 
-        var result = new Dictionary<T, double>();
-        foreach (var probability in probabilities)
-        {
-            if(probability.Value != 0)
-                result.Add(probability.Key, -Math.Log2(probability.Value));
-            else
-                result.Add(probability.Key, 0);
-        }
-
-        return result;
+        return probabilities
+            .ToDictionary(probability => probability.Key,
+                probability => -Math.Log2(probability.Value));
     }
 
     public (double bits, double bytes) GetInfoAmount()
@@ -49,7 +51,6 @@ public abstract class BaseFileAnalyzer<T> where T : notnull
         var occurrences = GetCountOccurrences();
 
         var bits = infoAmountInSymbol
-            .Where(item => item.Value != 0)
             .Sum(item => item.Value * occurrences[item.Key]);
 
         var bytes = Math.Ceiling(bits);

@@ -1,4 +1,6 @@
-﻿namespace SandBox;
+﻿using Archiver5E2D.FileAnalyzers;
+
+namespace SandBox;
 
 public static class FileAnalyzerExample
 {
