@@ -86,7 +86,8 @@ public class BitsArray
 
     public override bool Equals(object? obj)
     {
-        return (obj != null && this.GetType().Equals(obj.GetType())) && this.bitArray.Equals(((BitsArray)obj).bitArray);
+        var otherBitArray = obj as BitsArray;
+        return otherBitArray != null && this.bitArray.Equals(otherBitArray.bitArray);
     }
 
     public override int GetHashCode()

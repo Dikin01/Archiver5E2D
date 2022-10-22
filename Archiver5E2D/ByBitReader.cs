@@ -22,11 +22,16 @@ public class ByBitReader
         {
             if (readBits.Length == 0)
             {
-                readBits = new StringBuilder(Convert.ToString(content[currentPos++], 2));
+                readBits = new StringBuilder(Convert.ToString(content[currentPos++], 2).PadLeft(8, '0'));
             }
-            bits.Append(readBits[0]);
-            readBits.Remove(0, 1);
+            bits.Append(readBits[readBits.Length - 1]);
+            readBits.Length--;
         }
         return bits.ToString();
+    }
+
+    public bool IsContentOver()
+    {
+        return currentPos >= content.Length;
     }
 }
