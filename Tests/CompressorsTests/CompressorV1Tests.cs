@@ -19,7 +19,7 @@ public class CompressorV1Tests
         var result = _compressor.Compress(file);
 
         result.Content.Should().HaveCount(12);
-        var headerBytes = result.Content.Take((int)Compressor.DataOffset).ToList();
+        var headerBytes = result.Content.Take((int)_compressor.DataOffset).ToList();
         TestHeader(headerBytes, (uint)bytes.Length);
     }
 
@@ -32,7 +32,7 @@ public class CompressorV1Tests
         var result = _compressor.Compress(file);
 
         result.Content.Should().HaveCount(13);
-        var headerBytes = result.Content.Take((int)Compressor.DataOffset).ToList();
+        var headerBytes = result.Content.Take((int)_compressor.DataOffset).ToList();
         TestHeader(headerBytes, (uint)bytes.Length);
     }
     
