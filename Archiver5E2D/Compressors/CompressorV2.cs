@@ -1,5 +1,6 @@
 using File = Archiver5E2D.Entities.File;
 using Archiver5E2D.CompressionAlgorithms;
+using StringBuilder = System.Text.StringBuilder;
 
 namespace Archiver5E2D.Compressors;
 
@@ -8,7 +9,6 @@ public class CompressorV2 : Compressor
     public const uint DecompressInfoOffset = 12;
     public override byte Version => 0x2;
     public override byte[] AlgorithmCodes { get; } = { 0, 0, 0 };
-
     private byte[] DecompressInfo = new byte [0];
 
     public override File Compress(File file)
@@ -32,27 +32,27 @@ public class CompressorV2 : Compressor
     {
         var decompressInfo = ReadDecompressInfo(file.Content);
         byte[] dataSizeBytes = new byte[DataSizeLength];
-        Array.Copy(file.Content, 0, dataSizeBytes, DataSizeOffset, DataSizeLength);
+        Array.Copy(file.Content, DataSizeOffset, dataSizeBytes, 0, DataSizeLength);
         uint dataSize = BitConverter.ToUInt32(dataSizeBytes, 0);
         var contentBytes = RemoveHeader(file.Content);
         var bitReader = new ByBitReader(contentBytes);
-        var decompressedContent = new byte[dataSize];
-        for (uint i = 0; i < dataSize; i++)
+        var decompressedContent = new List<byte>();
+        while(!bitReader.IsContentOver())
         {
-            var currentBits = new BitsArray();
-            while (!decompressInfo.ContainsKey(currentBits))
+            var currentBits = new StringBuilder();
+            while (!decompressInfo.ContainsKey(currentBits.ToString()))
             {
-                currentBits.AddBit(bitReader.ReadBits(1)[0] == '1');
+                currentBits.Append(bitReader.ReadBits(1));
             }
-            decompressedContent[i] = decompressInfo[currentBits];
+            decompressedContent.Add(decompressInfo[currentBits.ToString()]);
         }
-        return new File(file.Path, file.Name, decompressedContent);
+        return new File(file.Path, file.Name, decompressedContent.ToArray());
     }
 
     protected override byte[] AddHeader(byte[] contentBytes)
     {
         var decompressInfoLength = (uint)DecompressInfo.Length;
-        DataOffset += decompressInfoLength;
+        DataOffset = DecompressInfoOffset + decompressInfoLength;
         var size = (uint)contentBytes.Length;
         var resultLength = size + DataOffset;
         var result = new byte[resultLength];
@@ -86,29 +86,30 @@ public class CompressorV2 : Compressor
         {
             if (codeForBytes.ContainsKey(currentByte))
             {
-                decompressInfo.AddBits(Convert.ToString(codeForBytes[currentByte].Length() - 1, 2));
+                decompressInfo.AddBits(Convert.ToString(codeForBytes[currentByte].Length(), 2).PadLeft(4, '0'));
                 decompressInfo.AddBits(codeForBytes[currentByte].ToString());
             }
             else
             {
-                decompressInfo.AddBits("000");
+                decompressInfo.AddBits("0000");
             }
         }
         return decompressInfo.ToBytes();
     }
 
-    private Dictionary<BitsArray, byte> ReadDecompressInfo(byte[] contentBytes)
+    private Dictionary<string, byte> ReadDecompressInfo(byte[] contentBytes)
     {
-        Dictionary<BitsArray, byte> decompressInfo = new Dictionary<BitsArray, byte>();
+        Dictionary<string, byte> decompressInfo = new Dictionary<string, byte>();
         var bitReader = new ByBitReader(contentBytes);
         bitReader.currentPos = DecompressInfoOffset;
         byte currentByte = 0;
         for (int count = 0; count <= 255; count++, currentByte++)
         {
-            var codeSize = Convert.ToUInt32(bitReader.ReadBits(3), 2) + 1;
+            var codeSize = Convert.ToUInt32(bitReader.ReadBits(4), 2);
             if (codeSize == 0) continue;
-            decompressInfo[new BitsArray(bitReader.ReadBits(codeSize))] = currentByte;
+            decompressInfo[bitReader.ReadBits(codeSize)] = currentByte;
         }
+        DataOffset = bitReader.currentPos;
         return decompressInfo;
     }
 }
