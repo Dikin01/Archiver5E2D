@@ -2,23 +2,23 @@ namespace Archiver5E2D.FileAnalyzers;
 
 public abstract class BaseFileAnalyzer<T> where T : notnull
 {
-    protected readonly byte[] _fileBytes;
+    protected readonly byte[] FileBytes;
 
     public abstract long Length { get; }
 
     public BaseFileAnalyzer(string path)
     {
-        _fileBytes = File.ReadAllBytes(path);
+        FileBytes = File.ReadAllBytes(path);
     }
 
     public BaseFileAnalyzer(Archiver5E2D.Entities.File file)
     {
-        _fileBytes = file.Content;
+        FileBytes = file.Content;
     }
 
     public abstract Dictionary<T, long> GetCountOccurrences();
 
-    public Dictionary<T, double> GetProbabilities()
+    public virtual Dictionary<T, double> GetProbabilities()
     {
         var occurrences = GetCountOccurrences();
 
@@ -52,7 +52,7 @@ public abstract class BaseFileAnalyzer<T> where T : notnull
             .Where(item => item.Value != 0)
             .Sum(item => item.Value * occurrences[item.Key]);
 
-        var bytes = Math.Ceiling(bits);
+        var bytes = bits / 8;
 
         return (bits, bytes);
     }

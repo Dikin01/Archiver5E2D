@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Archiver5E2D.FileAnalyzers;
 
 namespace Tests.FileAnalyzersTests;
 
