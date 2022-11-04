@@ -1,97 +1,83 @@
-using BitArray = System.Collections.BitArray;
-using StringBuilder = System.Text.StringBuilder;
+using System.Collections;
+using System.Text;
 
 namespace Archiver5E2D;
 
 public class BitsArray
 {
-    public BitArray bitArray { get; protected set; }
+    private BitArray _bitArray = new(0);
 
-    public BitsArray()
-    {
-        bitArray = new BitArray(0);
-    }
+    public int Length => _bitArray.Length;
+
+    public BitsArray() { }
 
     public BitsArray(BitArray bitArray)
     {
-        this.bitArray = bitArray;
+        _bitArray = bitArray;
     }
 
     public BitsArray(BitsArray bitsArray)
     {
-        this.bitArray = new BitArray(bitsArray.bitArray);
-    }
-
-    public BitsArray(string bits)
-    {
-        this.bitArray = new BitArray(0);
-        this.AddBits(bits);
+        _bitArray = new BitArray(bitsArray._bitArray);
     }
 
     public void AddBit(bool bit)
     {
-        var extendedBitArray = new BitArray(this.bitArray);
+        var extendedBitArray = new BitArray(_bitArray);
         extendedBitArray.Length += 1;
-        extendedBitArray[extendedBitArray.Length - 1] = bit;
-        this.bitArray = extendedBitArray;
+        extendedBitArray[^1] = bit;
+        _bitArray = extendedBitArray;
     }
 
     public void AddBits(string bits)
     {
-        var extendedBitArray = new BitArray(this.bitArray);
+        var extendedBitArray = new BitArray(_bitArray);
         extendedBitArray.Length += bits.Length;
-        for (int i = 0; i < bits.Length; i++)
+
+        for (var i = 0; i < bits.Length; i++)
         {
-            bool bit = false;
-            if (bits[i] == '1')
-            {
-                bit = true;
-            }
-            extendedBitArray[extendedBitArray.Length - (bits.Length - i)] = bit;
+            var bit = bits[i] == '1';
+            extendedBitArray[^(bits.Length - i)] = bit;
         }
-        this.bitArray = extendedBitArray;
+
+        _bitArray = extendedBitArray;
     }
 
     public static BitsArray Concat(BitsArray leftBits, BitsArray rightBits)
     {
-        var left = leftBits.bitArray;
-        var right = rightBits.bitArray;
+        var left = leftBits._bitArray;
+        var right = rightBits._bitArray;
         var bools = new bool[left.Count + right.Count];
+        
         left.CopyTo(bools, 0);
         right.CopyTo(bools, left.Count);
+        
         return new BitsArray(new BitArray(bools));
-    }
-
-    public int Length()
-    {
-        return bitArray.Length;
     }
 
     public byte[] ToBytes()
     {
-        byte[] bytes = new byte[Convert.ToInt32(Math.Ceiling((double)this.bitArray.Length / 8))];
-        this.bitArray.CopyTo(bytes, 0);
+        var bytes = new byte[(int)Math.Ceiling((double)_bitArray.Length / 8)];
+        _bitArray.CopyTo(bytes, 0);
         return bytes;
     }
 
     public override string ToString()
     {
         var bits = new StringBuilder();
-        for (int i = 0; i < bitArray.Count; i++)
-        {
-            bits.Append(bitArray[i] ? '1' : '0');
-        }
+        for (var i = 0; i < _bitArray.Count; i++)
+            bits.Append(_bitArray[i] ? '1' : '0');
         return bits.ToString();
     }
 
     public override bool Equals(object? obj)
     {
         var otherBitArray = obj as BitsArray;
-        return otherBitArray != null && this.bitArray.Equals(otherBitArray.bitArray);
+        return otherBitArray != null && _bitArray.Equals(otherBitArray._bitArray);
     }
 
     public override int GetHashCode()
     {
-        return this.bitArray.GetHashCode();
+        return _bitArray.GetHashCode();
     }
 }
