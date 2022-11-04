@@ -12,8 +12,8 @@ public abstract class Compressor
     public const uint VersionOffset = 4;
     public const uint AlgorithmCodesOffset = 5;
     public const uint DataSizeOffset = 8;
-    public uint DataOffset = 12;
     
+    public abstract uint DataOffset { get; protected set; }
     public abstract byte Version { get; }
     
     // TODO: Убрать, версия компрессора не должна строго определять алгоритмы

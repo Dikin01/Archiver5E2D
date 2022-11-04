@@ -1,37 +1,36 @@
-using StringBuilder = System.Text.StringBuilder;
+using System.Text;
 
 namespace Archiver5E2D;
 
 public class ByBitReader
 {
-    public byte[] content { get; }
+    private readonly byte[] _content;
+    private StringBuilder _readBits = new();
 
-    public uint currentPos { get; set;}
-
-    private StringBuilder readBits = new StringBuilder();
+    public uint CurrentPosition { get; set; }
 
     public ByBitReader(byte[] content)
     {
-        this.content = content;
+        _content = content;
     }
 
     public string ReadBits(uint count)
     {
         var bits = new StringBuilder();
-        for (int i = 0; i < count; i++)
+        for (var i = 0; i < count; i++)
         {
-            if (readBits.Length == 0)
-            {
-                readBits = new StringBuilder(Convert.ToString(content[currentPos++], 2).PadLeft(8, '0'));
-            }
-            bits.Append(readBits[readBits.Length - 1]);
-            readBits.Length--;
+            if (_readBits.Length == 0)
+                _readBits = new StringBuilder(Convert.ToString(_content[CurrentPosition++], 2)
+                    .PadLeft(8, '0'));
+            bits.Append(_readBits[^1]);
+            _readBits.Length--;
         }
+
         return bits.ToString();
     }
 
     public bool IsContentOver()
     {
-        return currentPos >= content.Length;
+        return CurrentPosition >= _content.Length;
     }
 }
