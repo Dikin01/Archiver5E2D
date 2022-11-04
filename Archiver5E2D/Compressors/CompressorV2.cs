@@ -1,5 +1,6 @@
 using System.Text;
 using Archiver5E2D.CompressionAlgorithms;
+using Archiver5E2D.FileAnalyzers;
 using File = Archiver5E2D.Entities.File;
 
 namespace Archiver5E2D.Compressors;

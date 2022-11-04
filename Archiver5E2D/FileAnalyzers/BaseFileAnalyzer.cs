@@ -27,7 +27,7 @@ public abstract class BaseFileAnalyzer<T> where T : notnull
         return result;
     }
 
-    public Dictionary<T, double> GetProbabilities()
+    public virtual Dictionary<T, double> GetProbabilities()
     {
         var occurrences = GetCountOccurrences();
 
@@ -53,7 +53,7 @@ public abstract class BaseFileAnalyzer<T> where T : notnull
         var bits = infoAmountInSymbol
             .Sum(item => item.Value * occurrences[item.Key]);
 
-        var bytes = Math.Ceiling(bits);
+        var bytes = bits / 8;
 
         return (bits, bytes);
     }

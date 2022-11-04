@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Text;
 using Archiver5E2D.FileAnalyzers;
 using File = Archiver5E2D.Entities.File;
@@ -38,7 +38,8 @@ public class ByteFileAnalyzerTests
         var result = analyzer.GetCountOccurrences();
 
         RemoveFile(fileName);
-        result.Should().Equal(expected);
+        result.Where(item => item.Value > 0)
+            .Should().Equal(expected);
     }
 
     [Fact]
@@ -47,7 +48,7 @@ public class ByteFileAnalyzerTests
         var methodName = MethodBase.GetCurrentMethod()!.Name;
         var fileName = nameof(ByteFileAnalyzerTests) + methodName;
         CreateTextFile(fileName, _testText);
-        var file = File.FromExisting(fileName);
+        var file = File.FromExistingFile(fileName);
         RemoveFile(fileName);
         var expected = new Dictionary<byte, long>
         {
@@ -79,7 +80,8 @@ public class ByteFileAnalyzerTests
         var result = analyzer.GetProbabilities();
 
         RemoveFile(fileName);
-        result.Should().Equal(expected);
+        result.Where(item => item.Value > 0)
+            .Should().Equal(expected);
     }
 
     [Fact]
@@ -88,7 +90,7 @@ public class ByteFileAnalyzerTests
         var methodName = MethodBase.GetCurrentMethod()!.Name;
         var fileName = nameof(ByteFileAnalyzerTests) + methodName;
         CreateTextFile(fileName, _testText);
-        var file = File.FromExisting(fileName);
+        var file = File.FromExistingFile(fileName);
         RemoveFile(fileName);
         var expected = new Dictionary<byte, double>
         {
@@ -119,8 +121,8 @@ public class ByteFileAnalyzerTests
         var analyzer = new ByteFileAnalyzer(fileName);
         var result = analyzer.GetInfoAmountInSymbol();
 
-        RemoveFile(fileName);
-        result.Should().BeEquivalentTo(expected);
+        result.Where(item => item.Value > 0)
+            .Should().BeEquivalentTo(expected);
     }
 
     [Fact]
@@ -129,7 +131,7 @@ public class ByteFileAnalyzerTests
         var methodName = MethodBase.GetCurrentMethod()!.Name;
         var fileName = nameof(ByteFileAnalyzerTests) + methodName;
         CreateTextFile(fileName, _testText);
-        var file = File.FromExisting(fileName);
+        var file = File.FromExistingFile(fileName);
         RemoveFile(fileName);
         var expected = new Dictionary<byte, double>
         {
@@ -167,7 +169,7 @@ public class ByteFileAnalyzerTests
         var methodName = MethodBase.GetCurrentMethod()!.Name;
         var fileName = nameof(ByteFileAnalyzerTests) + methodName;
         CreateTextFile(fileName, _testText);
-        var file = File.FromExisting(fileName);
+        var file = File.FromExistingFile(fileName);
         RemoveFile(fileName);
         const double expectedBits = 87.5488;
         const int expectedBytes = 88;
