@@ -2,9 +2,15 @@ namespace Archiver5E2D.FileAnalyzers;
 
 public class ByteFileAnalyzer : BaseFileAnalyzer<byte>
 {
-    public ByteFileAnalyzer(string path) : base(path) { }
-    public ByteFileAnalyzer(Archiver5E2D.Entities.File file) : base(file) { }
+    public ByteFileAnalyzer(string path) : base(path)
+    {
+    }
 
+    public ByteFileAnalyzer(Archiver5E2D.Entities.File file) : base(file)
+    {
+    }
+
+    protected override IReadOnlyCollection<byte> AnalyzedSymbols => FileBytes;
     public override long Length => FileBytes.Length;
 
     public override Dictionary<byte, long> GetCountOccurrences()

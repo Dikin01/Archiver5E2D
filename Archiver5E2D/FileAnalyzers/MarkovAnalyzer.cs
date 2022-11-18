@@ -4,14 +4,19 @@ namespace Archiver5E2D.FileAnalyzers;
 
 public class MarkovAnalyzer : BaseFileAnalyzer<(byte, byte)>
 {
+    private readonly HashSet<(byte, byte)> _pairs;
+    
     public MarkovAnalyzer(string path) : base(path)
     {
+        _pairs = GetPairs();
     }
 
     public MarkovAnalyzer(File file) : base(file)
     {
+        _pairs = GetPairs();
     }
 
+    protected override IReadOnlyCollection<(byte, byte)> AnalyzedSymbols => _pairs;
     public override long Length => FileBytes.Length;
 
     public override Dictionary<(byte, byte), long> GetCountOccurrences()
@@ -47,5 +52,15 @@ public class MarkovAnalyzer : BaseFileAnalyzer<(byte, byte)>
             .ToDictionary(probability => probability.Key,
                 probability => probability.Value / firstSymbolsUnconditionalProbabilities
                     .Single(item => item.Key == probability.Key.Item1).Value);
+    }
+    
+    private HashSet<(byte, byte)> GetPairs()
+    {
+        var pairs = new HashSet<(byte, byte)>();
+
+        for (var i = 0; i < FileBytes.Length - 1; i++)
+            pairs.Add((FileBytes[i], FileBytes[i + 1]));
+
+        return pairs;
     }
 }

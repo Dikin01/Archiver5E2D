@@ -48,7 +48,7 @@ public class ByteFileAnalyzerTests
         var methodName = MethodBase.GetCurrentMethod()!.Name;
         var fileName = nameof(ByteFileAnalyzerTests) + methodName;
         CreateTextFile(fileName, _testText);
-        var file = File.FromExistingFile(fileName);
+        var file = File.FromExisting(fileName);
         RemoveFile(fileName);
         var expected = new Dictionary<byte, long>
         {
@@ -90,7 +90,7 @@ public class ByteFileAnalyzerTests
         var methodName = MethodBase.GetCurrentMethod()!.Name;
         var fileName = nameof(ByteFileAnalyzerTests) + methodName;
         CreateTextFile(fileName, _testText);
-        var file = File.FromExistingFile(fileName);
+        var file = File.FromExisting(fileName);
         RemoveFile(fileName);
         var expected = new Dictionary<byte, double>
         {
@@ -131,7 +131,7 @@ public class ByteFileAnalyzerTests
         var methodName = MethodBase.GetCurrentMethod()!.Name;
         var fileName = nameof(ByteFileAnalyzerTests) + methodName;
         CreateTextFile(fileName, _testText);
-        var file = File.FromExistingFile(fileName);
+        var file = File.FromExisting(fileName);
         RemoveFile(fileName);
         var expected = new Dictionary<byte, double>
         {
@@ -169,7 +169,7 @@ public class ByteFileAnalyzerTests
         var methodName = MethodBase.GetCurrentMethod()!.Name;
         var fileName = nameof(ByteFileAnalyzerTests) + methodName;
         CreateTextFile(fileName, _testText);
-        var file = File.FromExistingFile(fileName);
+        var file = File.FromExisting(fileName);
         RemoveFile(fileName);
         const double expectedBits = 87.5488;
         const int expectedBytes = 88;
