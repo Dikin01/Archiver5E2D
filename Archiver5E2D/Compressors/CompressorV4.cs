@@ -24,7 +24,8 @@ public class CompressorV4 : Compressor
             {
                 int rightBorder = Math.Min(i + _maxL, file.Content.Count() - 1);
                 int currLen = 0;
-                while (i + currLen <= rightBorder &&
+                while (currLen <= _maxL &&
+                    i + currLen <= rightBorder &&
                     file.Content[i + currLen] == file.Content[j + currLen])
                 {
                     currLen++;
@@ -37,6 +38,7 @@ public class CompressorV4 : Compressor
             }
             byte firstbyte = (byte)((bestLen << 2) | (bestShift >> 8));
             byte secondbyte = (byte)bestShift;
+            i += bestLen;
             compressedContent.Add(firstbyte);
             compressedContent.Add(secondbyte);
             compressedContent.Add(file.Content[i]);
