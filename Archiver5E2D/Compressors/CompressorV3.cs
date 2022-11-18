@@ -16,13 +16,18 @@ public class CompressorV3 : Compressor
     public override File Compress(File file)
     {
         var fileAnalyzer = new ByteFileAnalyzer(file);
-        _prefix = fileAnalyzer
-            .GetCountOccurrences()
-            .MinBy(pair => pair.Value)
-            .Key;
-        RlePrefix rlePrefix = new RlePrefix();
+
+        if (fileAnalyzer.GetCountOccurrences().Count < 1)
+            _prefix = 0xAA;
+        else
+            _prefix = fileAnalyzer
+                .GetCountOccurrences()
+                .MinBy(pair => pair.Value)
+                .Key;
+
+        var rlePrefix = new RlePrefix();
         AlgorithmCodes[1] = 0x1;
-        byte[] compressedContent = rlePrefix.Compress(_prefix, file.Content);
+        var compressedContent = rlePrefix.Compress(_prefix, file.Content);
         return new File(file.Path, file.Name, AddHeader(compressedContent));
     }
 
@@ -46,6 +51,7 @@ public class CompressorV3 : Compressor
                 decompressedData.Add(dataBytes[i]);
             }
         }
+
         return new File(file.Path, file.Name, decompressedData.ToArray());
     }
 
