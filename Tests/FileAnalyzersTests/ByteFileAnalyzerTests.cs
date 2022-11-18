@@ -153,7 +153,7 @@ public class ByteFileAnalyzerTests
         var fileName = nameof(ByteFileAnalyzerTests) + methodName;
         CreateTextFile(fileName, _testText);
         const double expectedBits = 87.5488;
-        const int expectedBytes = 88;
+        const double expectedBytes = 10.9436;
 
         var analyzer = new ByteFileAnalyzer(fileName);
         var result = analyzer.GetInfoAmount();
@@ -178,7 +178,7 @@ public class ByteFileAnalyzerTests
         var result = analyzer.GetInfoAmount();
 
         result.bits.Should().BeApproximately(expectedBits, 0.0001);
-        result.bytes.Should().Be(expectedBytes);
+        result.bytes.Should().BeApproximately(expectedBytes, 0.0001);
     }
 
 
