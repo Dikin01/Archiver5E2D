@@ -12,8 +12,8 @@ public abstract class Compressor
     public const uint VersionOffset = 4;
     public const uint AlgorithmCodesOffset = 5;
     public const uint DataSizeOffset = 8;
-    public const uint DataOffset = 12;
     
+    public abstract uint DataOffset { get; protected set; }
     public abstract byte Version { get; }
     
     // TODO: Убрать, версия компрессора не должна строго определять алгоритмы
@@ -31,7 +31,7 @@ public abstract class Compressor
         return new File(file.Path, file.Name, contentBytes);
     }
     
-    private byte[] AddHeader(byte[] contentBytes)
+    protected virtual byte[] AddHeader(byte[] contentBytes)
     {
         // TODO: Имеем ограничение на размер в 2 GB, надо исправлять на чанки
         var size = (uint)contentBytes.Length;
@@ -56,7 +56,7 @@ public abstract class Compressor
         return result;
     }
     
-    private byte[] RemoveHeader(byte[] contentBytes)
+    protected virtual byte[] RemoveHeader(byte[] contentBytes)
     {
         var result = contentBytes.Skip((int)DataOffset).ToArray();
 

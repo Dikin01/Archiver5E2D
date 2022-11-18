@@ -4,30 +4,23 @@ public abstract class BaseFileAnalyzer<T> where T : notnull
 {
     protected readonly byte[] FileBytes;
 
-    protected abstract IReadOnlyCollection<T> AnalyzedSymbols { get; }
-    protected abstract long Length { get; }
+    public abstract long Length { get; }
 
-    protected BaseFileAnalyzer(string path)
+    protected abstract IReadOnlyCollection<T> AnalyzedSymbols { get; }
+
+    public BaseFileAnalyzer(string path)
     {
         FileBytes = File.ReadAllBytes(path);
     }
 
-    protected BaseFileAnalyzer(Archiver5E2D.Entities.File file)
+    public BaseFileAnalyzer(Archiver5E2D.Entities.File file)
     {
         FileBytes = file.Content;
     }
 
-    public Dictionary<T, long> GetCountOccurrences()
-    {
-        var result = new Dictionary<T, long>();
+    public abstract Dictionary<T, long> GetCountOccurrences();
 
-        foreach (var symbol in AnalyzedSymbols)
-            result[symbol] = result.GetValueOrDefault(symbol, 0) + 1;
-
-        return result;
-    }
-
-    public Dictionary<T, double> GetProbabilities()
+    public virtual Dictionary<T, double> GetProbabilities()
     {
         var occurrences = GetCountOccurrences();
 
@@ -40,9 +33,16 @@ public abstract class BaseFileAnalyzer<T> where T : notnull
     {
         var probabilities = GetProbabilities();
 
-        return probabilities
-            .ToDictionary(probability => probability.Key,
-                probability => -Math.Log2(probability.Value));
+        var result = new Dictionary<T, double>();
+        foreach (var probability in probabilities)
+        {
+            if(probability.Value != 0)
+                result.Add(probability.Key, -Math.Log2(probability.Value));
+            else
+                result.Add(probability.Key, 0);
+        }
+
+        return result;
     }
 
     public (double bits, double bytes) GetInfoAmount()
@@ -51,9 +51,10 @@ public abstract class BaseFileAnalyzer<T> where T : notnull
         var occurrences = GetCountOccurrences();
 
         var bits = infoAmountInSymbol
+            .Where(item => item.Value != 0)
             .Sum(item => item.Value * occurrences[item.Key]);
 
-        var bytes = Math.Ceiling(bits);
+        var bytes = bits / 8;
 
         return (bits, bytes);
     }
