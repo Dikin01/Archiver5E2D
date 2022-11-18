@@ -1,7 +1,5 @@
-using System.Reflection;
 using System.Text;
 using Archiver5E2D.FileAnalyzers;
-using File = Archiver5E2D.Entities.File;
 
 namespace Tests.FileAnalyzersTests;
 
@@ -22,10 +20,10 @@ public class ByteFileAnalyzerTests
     }
 
     [Fact]
-    public void GetCountOccurrences_ShouldReturnExpected_WhenAnalyzerIsCreatedUsingPath()
+    public void GetCountOccurrences_ShouldReturnExpected_WhenByteFileAnalyzer()
     {
-        var methodName = MethodBase.GetCurrentMethod()!.Name;
-        var fileName = nameof(ByteFileAnalyzerTests) + methodName;
+        const string fileName = nameof(GetCountOccurrences_ShouldReturnExpected_WhenByteFileAnalyzer);
+        RemoveFile(fileName);
         CreateTextFile(fileName, _testText);
         var expected = new Dictionary<byte, long>
         {
@@ -43,31 +41,10 @@ public class ByteFileAnalyzerTests
     }
 
     [Fact]
-    public void GetCountOccurrences_ShouldReturnExpected_WhenAnalyzerIsCreatedUsingFile()
+    public void GetProbabilities_ShouldReturnExpected_WhenByteFileAnalyzer()
     {
-        var methodName = MethodBase.GetCurrentMethod()!.Name;
-        var fileName = nameof(ByteFileAnalyzerTests) + methodName;
-        CreateTextFile(fileName, _testText);
-        var file = File.FromExisting(fileName);
+        const string fileName = nameof(GetProbabilities_ShouldReturnExpected_WhenByteFileAnalyzer);
         RemoveFile(fileName);
-        var expected = new Dictionary<byte, long>
-        {
-            { _bytes[0], 10 },
-            { _bytes[1], 20 },
-            { _bytes[2], 30 }
-        };
-
-        var analyzer = new ByteFileAnalyzer(file);
-        var result = analyzer.GetCountOccurrences();
-
-        result.Should().Equal(expected);
-    }
-
-    [Fact]
-    public void GetProbabilities_ShouldReturnExpected_WhenAnalyzerIsCreatedUsingPath()
-    {
-        var methodName = MethodBase.GetCurrentMethod()!.Name;
-        var fileName = nameof(ByteFileAnalyzerTests) + methodName;
         CreateTextFile(fileName, _testText);
         var expected = new Dictionary<byte, double>
         {
@@ -85,31 +62,10 @@ public class ByteFileAnalyzerTests
     }
 
     [Fact]
-    public void GetProbabilities_ShouldReturnExpected_WhenAnalyzerIsCreatedUsingFile()
+    public void GetInfoAmountInSymbol_ShouldReturnExpected_WhenByteFileAnalyzer()
     {
-        var methodName = MethodBase.GetCurrentMethod()!.Name;
-        var fileName = nameof(ByteFileAnalyzerTests) + methodName;
-        CreateTextFile(fileName, _testText);
-        var file = File.FromExisting(fileName);
+        const string fileName = nameof(GetInfoAmountInSymbol_ShouldReturnExpected_WhenByteFileAnalyzer);
         RemoveFile(fileName);
-        var expected = new Dictionary<byte, double>
-        {
-            { _bytes[0], (double)10 / 60 },
-            { _bytes[1], (double)20 / 60 },
-            { _bytes[2], (double)30 / 60 }
-        };
-
-        var analyzer = new ByteFileAnalyzer(file);
-        var result = analyzer.GetProbabilities();
-
-        result.Should().Equal(expected);
-    }
-
-    [Fact]
-    public void GetInfoAmountInSymbol_ShouldReturnExpected_WhenAnalyzerIsCreatedUsingPath()
-    {
-        var methodName = MethodBase.GetCurrentMethod()!.Name;
-        var fileName = nameof(ByteFileAnalyzerTests) + methodName;
         CreateTextFile(fileName, _testText);
         var expected = new Dictionary<byte, double>
         {
@@ -126,70 +82,30 @@ public class ByteFileAnalyzerTests
     }
 
     [Fact]
-    public void GetInfoAmountInSymbol_ShouldReturnExpected_WhenAnalyzerIsCreatedUsingFile()
+    public void GetInfoAmount_ShouldReturnExpected_WhenByteFileAnalyzer()
     {
-        var methodName = MethodBase.GetCurrentMethod()!.Name;
-        var fileName = nameof(ByteFileAnalyzerTests) + methodName;
-        CreateTextFile(fileName, _testText);
-        var file = File.FromExisting(fileName);
+        const string fileName = nameof(GetInfoAmount_ShouldReturnExpected_WhenByteFileAnalyzer);
         RemoveFile(fileName);
-        var expected = new Dictionary<byte, double>
-        {
-            { _bytes[0], -Math.Log2((double)10 / 60) },
-            { _bytes[1], -Math.Log2((double)20 / 60) },
-            { _bytes[2], -Math.Log2((double)30 / 60) }
-        };
-
-        var analyzer = new ByteFileAnalyzer(file);
-        var result = analyzer.GetInfoAmountInSymbol();
-
-        result.Should().BeEquivalentTo(expected);
-    }
-
-    [Fact]
-    public void GetInfoAmount_ShouldReturnExpected_WhenAnalyzerIsCreatedUsingPath()
-    {
-        var methodName = MethodBase.GetCurrentMethod()!.Name;
-        var fileName = nameof(ByteFileAnalyzerTests) + methodName;
         CreateTextFile(fileName, _testText);
         const double expectedBits = 87.5488;
-        const double expectedBytes = 10.9436;
+        const int expectedBytes = 88;
 
         var analyzer = new ByteFileAnalyzer(fileName);
         var result = analyzer.GetInfoAmount();
 
-        RemoveFile(fileName);
         result.bits.Should().BeApproximately(expectedBits, 0.0001);
         result.bytes.Should().Be(expectedBytes);
-    }
-
-    [Fact]
-    public void GetInfoAmount_ShouldReturnExpected_WhenAnalyzerIsCreatedUsingFile()
-    {
-        var methodName = MethodBase.GetCurrentMethod()!.Name;
-        var fileName = nameof(ByteFileAnalyzerTests) + methodName;
-        CreateTextFile(fileName, _testText);
-        var file = File.FromExisting(fileName);
-        RemoveFile(fileName);
-        const double expectedBits = 87.5488;
-        const int expectedBytes = 88;
-
-        var analyzer = new ByteFileAnalyzer(file);
-        var result = analyzer.GetInfoAmount();
-
-        result.bits.Should().BeApproximately(expectedBits, 0.0001);
-        result.bytes.Should().BeApproximately(expectedBytes, 0.0001);
     }
 
 
     private static void CreateTextFile(string fileName, string text)
     {
-        System.IO.File.Create(fileName).Dispose();
-        System.IO.File.WriteAllText(fileName, text);
+        File.Create(fileName).Dispose();
+        File.WriteAllText(fileName, text);
     }
 
     private static void RemoveFile(string fileName)
     {
-        System.IO.File.Delete(fileName);
+        File.Delete(fileName);
     }
 }

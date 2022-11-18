@@ -158,7 +158,7 @@ public class CharFileAnalyzerTests
 
         RemoveFile(fileName);
         result.bits.Should().BeApproximately(expectedBits, 0.0001);
-        result.bytes.Should().Be(expectedBytes);
+        result.bytes.Should().BeApproximately(expectedBytes, 0.0001);
     }
 
     [Fact]
