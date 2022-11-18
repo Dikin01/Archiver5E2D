@@ -6,6 +6,8 @@ public abstract class BaseFileAnalyzer<T> where T : notnull
 
     public abstract long Length { get; }
 
+    protected abstract IReadOnlyCollection<T> AnalyzedSymbols { get; }
+
     public BaseFileAnalyzer(string path)
     {
         FileBytes = File.ReadAllBytes(path);

@@ -23,12 +23,13 @@ public class CharFileAnalyzer : BaseFileAnalyzer<char>
     {
         var result = new Dictionary<char, long>();
 
-        for (var i = char.MinValue; i < char.MaxValue; i++)
-            result.Add(i, 0);
-        result.Add(char.MaxValue, 0);
-
-        foreach (var symbol in _chars)
-            result[symbol]++;
+        foreach (var symbol in AnalyzedSymbols)
+        {
+            if (result.ContainsKey(symbol))
+                result[symbol]++;
+            else
+                result[symbol] = 1;
+        }
 
         return result;
     }

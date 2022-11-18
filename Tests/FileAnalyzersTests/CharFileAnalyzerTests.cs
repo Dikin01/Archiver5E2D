@@ -170,7 +170,7 @@ public class CharFileAnalyzerTests
         var file = File.FromExisting(fileName);
         RemoveFile(fileName);
         const double expectedBits = 87.5488;
-        const int expectedBytes = 88;
+        const double expectedBytes = 10.9436;
 
         var analyzer = new CharFileAnalyzer(file);
         var result = analyzer.GetInfoAmount();
