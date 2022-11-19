@@ -25,7 +25,7 @@ public class CompressorV4 : Compressor
             {
                 var rightBorder = Math.Min(i + MaxL, file.Content.Length - 2);
                 var currLen = 0;
-                while (currLen <= MaxL &&
+                while (currLen < MaxL &&
                     i + currLen <= rightBorder &&
                     file.Content[i + currLen] == file.Content[j + currLen])
                 {
