@@ -1,3 +1,3 @@
 ﻿using SandBox;
 
-FileAnalyzerExample.Example();
+ArchiverExample.Example();
